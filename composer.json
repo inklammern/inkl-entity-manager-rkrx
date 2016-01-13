@@ -1,0 +1,21 @@
+{
+	"name": "inkl/entity-manager-rkrx",
+	"description": "entity manager using rkrx mysql query builder",
+	"license": "MIT",
+	"authors": [{
+		"name": "Marcus",
+		"email": ""
+	}],
+	"require": {
+		"php": ">= 5.5",
+		"rkr/php-mysql-query-builder": "@stable",
+		"zendframework/zend-hydrator": "^2.0@stable",
+		"zendframework/zend-filter": "^2.5@stable",
+		"zendframework/zend-servicemanager": "^2.6@stable"
+	},
+	"autoload": {
+		"psr-4": {
+			"Inkl\\EntityManager\\": "src/"
+		}
+	}
+}
