@@ -3,18 +3,17 @@
 namespace Inkl\EntityManager\Repository;
 
 use Inkl\EntityManager\Collection\BaseCollection;
-use Inkl\EntityManager\Collection\CollectionInterface;
 use Inkl\EntityManager\Entity\EntityInterface;
 use Inkl\EntityManager\Factory\FactoryInterface;
-use Doctrine\DBAL\Driver\Connection;
+use Kir\MySQL\Databases\MySQL;
 use Zend\Hydrator\HydratorInterface;
 
 
 abstract class AbstractRepository implements RepositoryInterface
 {
 
-	/** @var Connection */
-	private $connection;
+	/** @var MySQL */
+	private $mysql;
 	/** @var FactoryInterface */
 	private $factory;
 	/** @var HydratorInterface */
@@ -26,15 +25,15 @@ abstract class AbstractRepository implements RepositoryInterface
 
 	/**
 	 * VideoRepository constructor.
-	 * @param Connection $connection
+	 * @param MySQL $mysql
 	 * @param FactoryInterface $factory
 	 * @param HydratorInterface $hydrator
 	 * @param $mainTable
 	 * @param $primaryKey
 	 */
-	public function __construct(Connection $connection, FactoryInterface $factory, HydratorInterface $hydrator, $mainTable, $primaryKey)
+	public function __construct(MySQL $mysql, FactoryInterface $factory, HydratorInterface $hydrator, $mainTable, $primaryKey)
 	{
-		$this->connection = $connection;
+		$this->mysql = $mysql;
 		$this->factory = $factory;
 		$this->hydrator = $hydrator;
 		$this->mainTable = $mainTable;
@@ -54,9 +53,9 @@ abstract class AbstractRepository implements RepositoryInterface
 	}
 
 
-	public function getConnection()
+	public function getMysql()
 	{
-		return $this->connection;
+		return $this->mysql;
 	}
 
 
@@ -83,15 +82,13 @@ abstract class AbstractRepository implements RepositoryInterface
 
 		$primaryKey = $this->getPrimaryKey();
 
-		$query = $this->connection->createQueryBuilder()
-			->select('*')
-			->from($this->getMainTable())
-			->where($primaryKey . '=:' . $primaryKey)
-			->setParameter($primaryKey, $id);
+		$select = $this->mysql->select()
+			->from('main_table', $this->getMainTable())
+			->where('main_table.' . $primaryKey . '=?', $id);
 
 		$entity = $this->create();
 
-		if ($data = $query->execute()->fetch())
+		if ($data = $select->fetchRow())
 		{
 			$this->hydrator->hydrate($data, $entity);
 		}
@@ -116,18 +113,24 @@ abstract class AbstractRepository implements RepositoryInterface
 
 		if (isset($data[$primaryKey]) && !empty($data[$primaryKey]))
 		{
-
 			// update
-			$this->connection->update($this->getMainTable(), $data, [$primaryKey => $data[$primaryKey]]);
+			$this->mysql->update()
+				->table('main_table', $this->getMainTable())
+				->setAll($data)
+				->where('main_table.' . $primaryKey . '=?', $data[$primaryKey])
+				->run();
 
 		} else
 		{
 
 			// insert
-			$this->connection->insert($this->getMainTable(), $data);
+			$this->mysql->insert()
+				->into($this->getMainTable())
+				->addAll($data)
+				->run();
 
 			// last_insert id
-			$data[$primaryKey] = $this->connection->lastInsertId();
+			$data[$primaryKey] = $this->mysql->getLastInsertId();
 			$this->hydrator->hydrate($data, $entity);
 
 		}
@@ -138,7 +141,7 @@ abstract class AbstractRepository implements RepositoryInterface
 
 	public function getLastInsertId()
 	{
-		return $this->connection->lastInsertId();
+		return $this->mysql->getLastInsertId();
 	}
 
 
@@ -150,7 +153,10 @@ abstract class AbstractRepository implements RepositoryInterface
 
 		if (isset($data[$primaryKey]) && $data[$primaryKey] > 0)
 		{
-			$this->connection->delete($this->getMainTable(), [$primaryKey => $data[$primaryKey]]);
+			$this->mysql->delete()
+				->from('main_table', $this->getMainTable())
+				->where('main_table.' . $primaryKey . '=?', $data[$primaryKey])
+				->run();
 
 			return true;
 		}

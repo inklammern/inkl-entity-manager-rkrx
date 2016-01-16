@@ -4,6 +4,7 @@ namespace Inkl\EntityManager\Collection;
 
 use Inkl\EntityManager\Repository\RepositoryInterface;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Kir\MySQL\Builder\Select;
 
 class BaseCollection implements CollectionInterface, \IteratorAggregate {
 
@@ -12,8 +13,8 @@ class BaseCollection implements CollectionInterface, \IteratorAggregate {
 	/** @var RepositoryInterface */
 	protected $repository;
 
-	/** @var QueryBuilder */
-	protected $queryBuilder;
+	/** @var Select */
+	protected $select;
 
 	/**
 	 * @param RepositoryInterface $repository
@@ -21,33 +22,32 @@ class BaseCollection implements CollectionInterface, \IteratorAggregate {
 	public function __construct(RepositoryInterface $repository) {
 		$this->repository = $repository;
 
-		$this->initQueryBuilder();
+		$this->initSelect();
 	}
 
 
-	protected function initQueryBuilder() {
+	protected function initSelect() {
 
-		$this->queryBuilder = $this->repository->getConnection()->createQueryBuilder()
-			->select('*')
-			->from($this->repository->getMainTable(), 'main_table');
+		$this->select = $this->repository->getMysql()->select()
+			->from('main_table', $this->repository->getMainTable());
 	}
 
 
 	protected function loadData()
 	{
-		$stmt = $this->queryBuilder->execute();
-
 		$this->items = [];
-		while ($data = $stmt->fetch())
+
+		$rows = $this->select->fetchRows();
+		foreach ($rows as $data)
 		{
 			$this->items[] = $this->repository->getHydrator()->hydrate($data, $this->repository->getFactory()->create());
 		}
 	}
 
 
-	public function getQueryBuilder()
+	public function getSelect()
 	{
-		return $this->queryBuilder;
+		return $this->select;
 	}
 
 
@@ -61,11 +61,11 @@ class BaseCollection implements CollectionInterface, \IteratorAggregate {
 
 	public function getCount()
 	{
-		$queryBuilder = clone $this->queryBuilder;
+		$select = clone $this->select;
 
-		$stmt = $queryBuilder->select('COUNT(*)')->execute();
+		$select->field('COUNT(*)');
 
-		return current($stmt->fetch());
+		return $select->fetchValue();
 	}
 
 
@@ -78,9 +78,9 @@ class BaseCollection implements CollectionInterface, \IteratorAggregate {
 
 
 	public function setPage($pageNum, $pageSize) {
-		$this->queryBuilder
-			->setFirstResult(($pageNum-1) * $pageSize)
-			->setMaxResults($pageSize);
+		$this->select
+			->offset(($pageNum-1) * $pageSize)
+			->limit($pageSize);
 
 		return $this;
 	}

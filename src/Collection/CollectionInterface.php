@@ -4,7 +4,7 @@ namespace Inkl\EntityManager\Collection;
 
 interface CollectionInterface
 {
-	public function getQueryBuilder();
+	public function getSelect();
 
 	public function getFirst();
 
