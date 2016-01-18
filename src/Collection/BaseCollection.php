@@ -37,8 +37,7 @@ class BaseCollection implements CollectionInterface, \IteratorAggregate {
 	{
 		$this->items = [];
 
-		$rows = $this->select->fetchRows();
-		foreach ($rows as $data)
+		foreach ($this->select->fetchRowsLazy() as $data)
 		{
 			$this->items[] = $this->repository->getHydrator()->hydrate($data, $this->repository->getFactory()->create());
 		}
