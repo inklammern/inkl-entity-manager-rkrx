@@ -54,6 +54,8 @@ class BaseCollection implements CollectionInterface, \IteratorAggregate {
 	{
 		$this->loadData();
 
+		if (count($this->items) == 0) return null;
+
 		return current($this->items);
 	}
 

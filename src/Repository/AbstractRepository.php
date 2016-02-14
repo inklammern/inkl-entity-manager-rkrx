@@ -79,12 +79,15 @@ abstract class AbstractRepository implements RepositoryInterface
 
 	public function load($id)
 	{
+		return $this->loadByField($this->primaryKey, $id);
+	}
 
-		$primaryKey = $this->getPrimaryKey();
 
+	protected function loadByField($field, $value)
+	{
 		$select = $this->mysql->select()
 			->from('main_table', $this->getMainTable())
-			->where('main_table.' . $primaryKey . '=?', $id);
+			->where('main_table.' . $field . '=?', $value);
 
 		$entity = $this->create();
 
