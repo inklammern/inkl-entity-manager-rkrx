@@ -5,9 +5,8 @@ namespace Inkl\EntityManager\Repository;
 use Inkl\EntityManager\Collection\CollectionInterface;
 use Inkl\EntityManager\Entity\EntityInterface;
 use Inkl\EntityManager\Factory\FactoryInterface;
-use Kir\MySQL\Databases\MySQL;
+use Kir\MySQL\Database;
 use Zend\Hydrator\HydratorInterface;
-use Doctrine\DBAL\Connection;
 
 interface RepositoryInterface {
 
@@ -17,8 +16,8 @@ interface RepositoryInterface {
 	/** @return string */
 	public function getPrimaryKey();
 
-	/** @return Mysql */
-	public function getMysql();
+	/** @return Database */
+	public function getDb();
 
 	/** @return FactoryInterface */
 	public function getFactory();

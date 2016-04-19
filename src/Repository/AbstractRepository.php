@@ -5,15 +5,15 @@ namespace Inkl\EntityManager\Repository;
 use Inkl\EntityManager\Collection\BaseCollection;
 use Inkl\EntityManager\Entity\EntityInterface;
 use Inkl\EntityManager\Factory\FactoryInterface;
-use Kir\MySQL\Databases\MySQL;
+use Kir\MySQL\Database;
 use Zend\Hydrator\HydratorInterface;
 
 
 abstract class AbstractRepository implements RepositoryInterface
 {
 
-	/** @var MySQL */
-	private $mysql;
+	/** @var Database */
+	private $db;
 	/** @var FactoryInterface */
 	private $factory;
 	/** @var HydratorInterface */
@@ -25,15 +25,15 @@ abstract class AbstractRepository implements RepositoryInterface
 
 	/**
 	 * VideoRepository constructor.
-	 * @param MySQL $mysql
+	 * @param Database $db
 	 * @param FactoryInterface $factory
 	 * @param HydratorInterface $hydrator
 	 * @param $mainTable
 	 * @param $primaryKey
 	 */
-	public function __construct(MySQL $mysql, FactoryInterface $factory, HydratorInterface $hydrator, $mainTable, $primaryKey)
+	public function __construct(Database $db, FactoryInterface $factory, HydratorInterface $hydrator, $mainTable, $primaryKey)
 	{
-		$this->mysql = $mysql;
+		$this->db = $db;
 		$this->factory = $factory;
 		$this->hydrator = $hydrator;
 		$this->mainTable = $mainTable;
@@ -53,9 +53,9 @@ abstract class AbstractRepository implements RepositoryInterface
 	}
 
 
-	public function getMysql()
+	public function getDb()
 	{
-		return $this->mysql;
+		return $this->db;
 	}
 
 
@@ -85,7 +85,7 @@ abstract class AbstractRepository implements RepositoryInterface
 
 	protected function loadByField($field, $value)
 	{
-		$select = $this->mysql->select()
+		$select = $this->db->select()
 			->from('main_table', $this->getMainTable())
 			->where('main_table.' . $field . '=?', $value);
 
@@ -117,7 +117,7 @@ abstract class AbstractRepository implements RepositoryInterface
 		if (isset($data[$primaryKey]) && !empty($data[$primaryKey]))
 		{
 			// update
-			$this->mysql->update()
+			$this->db->update()
 				->table('main_table', $this->getMainTable())
 				->setAll($data)
 				->where('main_table.' . $primaryKey . '=?', $data[$primaryKey])
@@ -127,13 +127,13 @@ abstract class AbstractRepository implements RepositoryInterface
 		{
 
 			// insert
-			$this->mysql->insert()
+			$this->db->insert()
 				->into($this->getMainTable())
 				->addAll($data)
 				->run();
 
 			// last_insert id
-			$data[$primaryKey] = $this->mysql->getLastInsertId();
+			$data[$primaryKey] = $this->db->getLastInsertId();
 			$this->hydrator->hydrate($data, $entity);
 
 		}
@@ -144,7 +144,7 @@ abstract class AbstractRepository implements RepositoryInterface
 
 	public function getLastInsertId()
 	{
-		return $this->mysql->getLastInsertId();
+		return $this->db->getLastInsertId();
 	}
 
 
@@ -156,7 +156,7 @@ abstract class AbstractRepository implements RepositoryInterface
 
 		if (isset($data[$primaryKey]) && $data[$primaryKey] > 0)
 		{
-			$this->mysql->delete()
+			$this->db->delete()
 				->from('main_table', $this->getMainTable())
 				->where('main_table.' . $primaryKey . '=?', $data[$primaryKey])
 				->run();

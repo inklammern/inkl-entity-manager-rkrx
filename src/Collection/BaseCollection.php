@@ -3,7 +3,6 @@
 namespace Inkl\EntityManager\Collection;
 
 use Inkl\EntityManager\Repository\RepositoryInterface;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Kir\MySQL\Builder\Select;
 
 class BaseCollection implements CollectionInterface, \IteratorAggregate {
@@ -28,7 +27,7 @@ class BaseCollection implements CollectionInterface, \IteratorAggregate {
 
 	protected function initSelect() {
 
-		$this->select = $this->repository->getMysql()->select()
+		$this->select = $this->repository->getDb()->select()
 			->from('main_table', $this->repository->getMainTable());
 	}
 
