@@ -2,4 +2,6 @@
 
 namespace Inkl\EntityManager\Entity;
 
-interface EntityInterface {}
+interface EntityInterface
+{
+}
