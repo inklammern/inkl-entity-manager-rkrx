@@ -100,6 +100,15 @@ abstract class AbstractRepository implements RepositoryInterface
 	}
 
 
+	public function exists($id)
+	{
+		$select = $this->db->select(['COUNT(*)'])
+			->from('main_table', $this->getMainTable())
+			->where('main_table.' . $this->getPrimaryKey() . '=?', $id);
+
+		return $select->fetchValue();
+	}
+
 	/**
 	 * @return BaseCollection
      */
@@ -114,8 +123,9 @@ abstract class AbstractRepository implements RepositoryInterface
 		$primaryKey = $this->getPrimaryKey();
 		$data = $this->hydrator->extract($entity);
 
-		if (isset($data[$primaryKey]) && !empty($data[$primaryKey]))
+		if ($this->exists($data[$primaryKey]))
 		{
+
 			// update
 			$this->db->update()
 				->table('main_table', $this->getMainTable())
@@ -150,7 +160,6 @@ abstract class AbstractRepository implements RepositoryInterface
 
 	public function delete(EntityInterface $entity)
 	{
-
 		$primaryKey = $this->getPrimaryKey();
 		$data = $this->hydrator->extract($entity);
 
@@ -165,6 +174,30 @@ abstract class AbstractRepository implements RepositoryInterface
 		}
 
 		return false;
+	}
+
+
+	public function deleteAll()
+	{
+		$this->db->exec('DELETE FROM ' . $this->getMainTable());
+	}
+
+
+	public function transactionStart()
+	{
+		$this->db->transactionStart();
+	}
+
+
+	public function transactionRollback()
+	{
+		$this->db->transactionRollback();
+	}
+
+
+	public function transactionCommit()
+	{
+		$this->db->transactionCommit();
 	}
 
 }
