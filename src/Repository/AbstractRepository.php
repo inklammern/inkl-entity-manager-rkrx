@@ -123,7 +123,7 @@ abstract class AbstractRepository implements RepositoryInterface
 		$primaryKey = $this->getPrimaryKey();
 		$data = $this->hydrator->extract($entity);
 
-		if ($this->exists($data[$primaryKey]))
+		if ($data[$primaryKey] != '' && $this->exists($data[$primaryKey]))
 		{
 
 			// update
