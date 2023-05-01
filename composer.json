@@ -7,11 +7,11 @@
 		"email": ""
 	}],
 	"require": {
-		"php": ">= 5.5",
+		"php": "^8.2",
 		"rkr/php-mysql-query-builder": "@stable",
-		"zendframework/zend-hydrator": "^2.0@stable",
-		"zendframework/zend-filter": "^2.5@stable",
-		"zendframework/zend-servicemanager": "^2.6@stable"
+		"zendframework/zend-hydrator": "^3.0.2",
+		"zendframework/zend-filter": "^2.9.2",
+		"zendframework/zend-servicemanager": "^3.4.0"
 	},
 	"autoload": {
 		"psr-4": {
