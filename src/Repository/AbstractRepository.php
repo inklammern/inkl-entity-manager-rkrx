@@ -6,7 +6,7 @@ use Inkl\EntityManager\Collection\BaseCollection;
 use Inkl\EntityManager\Entity\EntityInterface;
 use Inkl\EntityManager\Factory\FactoryInterface;
 use Kir\MySQL\Database;
-use Zend\Hydrator\HydratorInterface;
+use Laminas\Hydrator\HydratorInterface;
 
 
 abstract class AbstractRepository implements RepositoryInterface
