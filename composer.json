@@ -1,19 +1,21 @@
 {
-	"name": "inkl/entity-manager-rkrx",
-	"description": "entity manager using rkrx mysql query builder",
-	"license": "MIT",
-	"authors": [{
-		"name": "Marcus",
-		"email": ""
-	}],
-	"require": {
-		"php": "^8.2",
-		"rkr/php-mysql-query-builder": "@stable",
-		"laminas/laminas-hydrator": "^4.13.0",
-	},
-	"autoload": {
-		"psr-4": {
-			"Inkl\\EntityManager\\": "src/"
-		}
-	}
+  "name": "inkl/entity-manager-rkrx",
+  "description": "entity manager using rkrx mysql query builder",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Marcus",
+      "email": ""
+    }
+  ],
+  "require": {
+    "php": "^8.2",
+    "rkr/php-mysql-query-builder": "@stable",
+    "laminas/laminas-hydrator": "^4.13.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Inkl\\EntityManager\\": "src/"
+    }
+  }
 }
