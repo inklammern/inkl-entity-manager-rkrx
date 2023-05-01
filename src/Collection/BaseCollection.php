@@ -69,7 +69,7 @@ class BaseCollection implements CollectionInterface, \IteratorAggregate {
 	}
 
 
-	public function getIterator()
+	public function getIterator(): \Traversable
 	{
 		$this->loadData();
 
