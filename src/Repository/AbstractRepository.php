@@ -143,7 +143,7 @@ abstract class AbstractRepository implements RepositoryInterface
 				->run();
 
 			// last_insert id
-			$data[$primaryKey] = $this->db->getLastInsertId();
+			$data[$primaryKey] = (int)$this->db->getLastInsertId();
 			$this->hydrator->hydrate($data, $entity);
 
 		}
